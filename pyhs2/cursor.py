@@ -56,7 +56,7 @@ class Cursor(object):
         rows = []
         fetchReq = TFetchResultsReq(operationHandle=self.operationHandle,
                                     orientation=TFetchOrientation.FETCH_NEXT,
-                                    maxRows=100)
+                                    maxRows=10000)
         self._fetch(rows, fetchReq)
         return rows
 
@@ -90,16 +90,16 @@ class Cursor(object):
         self.close()
 
     def _fetch(self, rows, fetchReq):
-        resultsRes = self.client.FetchResults(fetchReq)
-        for row in resultsRes.results.rows:
-            rowData= []
-            for i, col in enumerate(row.colVals):
-                rowData.append(get_value(col))
-            rows.append(rowData)
-        if len(resultsRes.results.rows) != 0:
-            self._fetch(rows, fetchReq)
-        else:
-            return rows
+        while True:
+            resultsRes = self.client.FetchResults(fetchReq)
+            for row in resultsRes.results.rows:
+                rowData= []
+                for i, col in enumerate(row.colVals):
+                    rowData.append(get_value(col))
+                rows.append(rowData)
+            if len(resultsRes.results.rows) == 0:
+                break
+        return rows
 
     def close(self):
         if self.operationHandle is not None:
