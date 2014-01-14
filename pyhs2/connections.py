@@ -16,7 +16,7 @@ class Connection(object):
     session = None
 
     def __init__(self, host=None, port=10000, authMechanism=None, user=None, password=None, database=None):
-        authMechanisms = {'NOSASL', 'PLAIN', 'KERBEROS', 'LDAP'}
+        authMechanisms = set(['NOSASL', 'PLAIN', 'KERBEROS', 'LDAP'])
         if authMechanism not in authMechanisms or authMechanism == 'KERBEROS':
             raise NotImplementedError('authMechanism is either not supported or not implemented')
         socket = TSocket(host, port)
